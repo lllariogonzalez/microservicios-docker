@@ -353,3 +353,177 @@ En la última parte, finalmente llegará lo que estabas esperando:
 
 - Haremos el despliegue de toda la estructura en una máquina virtual, exponiendo un único puerto del Gateway como puerta de entrada a toda nuestra red de aplicaciones.
 
+# Docker Compose
+
+Docker Compose es una herramienta que facilita la orquestación y gestión de aplicaciones basadas en contenedores Docker. Proporciona una forma sencilla y declarativa de definir y ejecutar servicios compuestos por múltiples contenedores.
+
+Cuando trabajamos con aplicaciones modernas, es común tener componentes que se ejecutan de forma independiente, pero que necesitan comunicarse y colaborar entre sí. Por ejemplo, una aplicación web puede constar de un servidor web, una base de datos y un servidor de cache.
+
+Docker Compose nos permite describir y definir estos componentes en un archivo YAML, especificando cómo se deben configurar y cómo se comunican entre sí.
+
+Con Docker Compose, puedes crear un archivo de configuración llamado **docker-compose.yml**, en el cual se definen los servicios, volúmenes, redes y otras opciones de configuración necesarias para ejecutar la aplicación.
+
+Cada servicio se define como un contenedor Docker independiente, con su propia imagen, variables de entorno, puertos expuestos y configuración de red.
+
+Al utilizar Docker Compose, puedes aprovechar su sintaxis sencilla y legible para definir las dependencias y relaciones entre los servicios de tu aplicación. Por ejemplo, puedes indicar que un servicio depende de otro y que debe esperar hasta que el servicio dependiente esté en funcionamiento antes de iniciarse.
+
+Esto garantiza que todos los componentes de tu aplicación se ejecuten correctamente y se comuniquen entre sí de manera adecuada.
+
+## Ventajas de Docker Componse
+
+1. Simplifica la administración de aplicaciones en entornos de desarrollo, pruebas y producción.
+
+2. Permite crear y arrancar todos los contenedores definidos en el archivo de configuración con comandos simples.
+
+3. Facilita la detención y eliminación de todos los contenedores y recursos asociados.
+
+4. Es portátil, lo que permite compartir el archivo de configuración con otros miembros del equipo.
+
+5. Permite la colaboración y la replicación del entorno de desarrollo en diferentes máquinas.
+
+6. Es compatible con diferentes plataformas.
+
+7. Se integra fácilmente con otras herramientas de Docker, como Docker Swarm o Kubernetes.
+
+8. Permite gestionar entornos de producción más complejos.
+
+> Puedes utilizar comandos como docker-compose up para crear y arrancar todos los contenedores definidos en el archivo de configuración, o docker-compose down para detener y eliminar todos los contenedores y recursos asociados.
+
+
+## Maquina Virtual
+
+Una máquina virtual (VM, por sus siglas en inglés) es una representación virtual de un sistema informático completo, que incluye hardware y software, y que se ejecuta en un entorno aislado dentro de un host físico. 
+
+En otras palabras, es un software que simula una computadora independiente, lo que permite ejecutar múltiples sistemas operativos y aplicaciones en un solo servidor físico.
+
+El concepto de máquinas virtuales se basa en la idea de dividir los recursos de hardware de una computadora en múltiples entornos virtuales. Cada máquina virtual tiene su propio sistema operativo, aplicaciones y recursos asignados, pero comparte el mismo conjunto de hardware subyacente.
+
+Esto permite la consolidación de varios servidores físicos en una sola máquina física, lo que resulta en una mejor utilización de los recursos y una mayor eficiencia.
+
+### Componentes principales
+
+Una máquina virtual consta de dos componentes principales: el hipervisor y la imagen de la máquina virtual.
+<br>
+---
+<details>
+  <summary>Hipervisor</summary>
+  El hipervisor, también conocido como monitor de máquina virtual, es el software responsable de gestionar y controlar las máquinas virtuales en el host físico. Puede haber hipervisores de tipo 1, que se ejecutan directamente sobre el hardware, o hipervisores de tipo 2, que se ejecutan sobre un sistema operativo existente.
+</details>
+
+---
+<details>
+  <summary>Imágen de máquina virtual</summary>
+  La imagen de la máquina virtual es un archivo que contiene todos los componentes necesarios para ejecutar un sistema operativo y aplicaciones dentro de la máquina virtual.
+
+  Esta imagen incluye el sistema operativo invitado, archivos de configuración, aplicaciones instaladas y cualquier otra configuración personalizada. Se puede crear una imagen de la máquina virtual desde cero o utilizar imágenes preconfiguradas proporcionadas por proveedores de virtualización.
+</details>
+
+---
+
+<br>
+Las máquinas virtuales se utilizan ampliamente en entornos de servidores para consolidar infraestructuras, mejorar la flexibilidad, facilitar la migración y aumentar la eficiencia energética. También son útiles para el desarrollo y la prueba de aplicaciones, ya que permiten la creación de entornos aislados y reproducibles.
+
+## Actividad
+
+Dividiremos nuestra actividad en los siguientes pasos:
+
+1. Configuración de Docker Compose en entorno local
+
+2. Subida de nuestro proyecto a un repositorio remoto
+
+3. Creación y configuración de una máquina virtual en un servicio en la nube, ejecución de nuestro proyecto en la máquina virtual y pruebas finales
+
+```yml
+# version de docker compose
+version: '3'
+# servicios
+services:
+  gateway:
+    container-name: gateway
+    restart: always
+    build: ./gateway
+    ports:
+      - '8000:8000'
+
+  characters:
+    container-name: characters
+    restart: always
+    build: ./characters
+    ports:
+      - ':8001' # podemos no exponerlos, pero se requiere para el deploy
+```
+
+```bash
+# construir el compose de containers creando las imagenes de todos los servicios
+docker-compose build
+# levantar todos los servicios del compose
+docker-compose up
+```
+
+¡Finalmente llegó el momento de crear nuestra VM! Lo cual será bastante sencillo. El dolor de cabeza aquí estará en configurarla. 🤭
+
+# Google Cloud
+
+1. Creamos una MV maquina virtual, instancia nueva.
+
+> Debemos permitir conexiones http y https
+
+2. Abrimos la consola, actualizamos e instalamos git, docker y docker-compose.
+
+```bash
+sudo apt update
+
+sudo apt install git
+
+sudo apt install docker.io
+
+sudo apt install docker-compose
+```
+
+3. Obtenemos nuestra clave ssh
+
+```bash
+# creamos nuestra clave
+ssh-keygen -t ed25519 -C "email"
+# recibiremos algunas preguntas, directorio para guardar clave, frase que identifique (no necesario)
+
+# leemos la clave ssh creada
+cat ~/.ssh/id_ed25519.pub
+
+# la clave la utilizaremos en github settings SSH and GPG keys, add new ssh key, name "api", key type, y en key pegamos nuestra clave ssh
+```
+
+4. Clonamos nuestro repositorio con SSH
+
+```bash
+git clone git@github.com:..../nameapissh
+```
+
+5. Creamos las .env necesarias para el proyecto
+
+```bash
+# nos movemos a la carpeta database que requiere env de MongoDB
+cd database/
+# creamos un archivo .env con la "data"
+echo "MONGO_URI:mongodb+srv://admin:admin@cluster0.74....." > .env
+# comprobamos el archivo creado
+ls -a
+```
+
+6. Entramos al repositorio, construimos las imagenes y levantamos los servicios
+
+```bash
+cd .. # si venimos de database o
+cd reponame/
+# construimos las imagenes
+sudo docker-compose build
+# levantamos los servicios
+sudo docker-compose up
+```
+
+7. Tenemos desplegada y funcionando nuestra app en la Maquina Virtual
+
+Debemos tener en cuenta los datos de interfaces de red, entramos en **default** > para configurar **firewall** > **default-allow-http** 
+Editar puertos, 80 por 8000 nuestro puerto principal del gateway y guardamos
+Copiamos la IP externa pública la cual expone nuestros servicios.
+
